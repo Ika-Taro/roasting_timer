@@ -58,19 +58,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
-  Widget panel() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        GestureDetector(
-          onTap: () {},
-          child: const SizedBox(height: 40, child: const Icon(Icons.stop)),
-        ),
-        GestureDetector(
-            onTap: () {},
-            child: const SizedBox(height: 40, child: Icon(Icons.play_arrow))),
-      ],
-    );
-  }
 }
