@@ -66,17 +66,17 @@ class _StopwatchPageState extends State<StopwatchPage> {
           children: <Widget>[
             Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 48.0)),
             ElevatedButton(onPressed: handleStartStop, child: Text(_stopwatch.isRunning ? 'Stop' : 'Start')),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return SecondPage(_stopwatch.elapsed.toString());
-                  }),
-                );
-              },
-              child: const Text('保存'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) {
+            //         return SecondPage(_stopwatch.elapsed.toString());
+            //       }),
+            //     );
+            //   },
+            //   child: const Text('保存'),
+            // ),
           ],
         ),
       ),
@@ -84,21 +84,149 @@ class _StopwatchPageState extends State<StopwatchPage> {
   }
 }
 
-class SecondPage extends StatelessWidget {
-  SecondPage(this.name);
+// class SecondPage extends StatelessWidget {
+//   SecondPage(this.name);
+//
+//   final String name;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//         appBar: AppBar(title: const Text("Second Page")),
+//         body: Center()
+//           child: Card(
+//             child: Column(
+//               title: Text(name),
+//             ),
+//           ),
+//         );
+//   }
+// }
 
-  final String name;
+class MemoListState extends State<MemoList> {
+  var _memoList = <String>[];
+  var _currentIndex = -1;
+  bool _loading = true;
+  final _biggerFont = const TextStyle(fontSize: 18.0);
+
+  @override
+  void initState() {
+    super.initState();
+    this.loadMemoList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: const Text("Second Page")),
-        body: Center()
-          child: Card(
-            child: Column(
-              title: Text(name),
-            ),
+    final title = "Home";
+    if (_loading) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(title),
           ),
-        );
+          body: CircularProgressIndicator());
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: _buildList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _addMemo,
+        tooltip: 'New Memo',
+        child: Icon(Icons.add),
+      ),
+    );
   }
+
+  void loadMemoList() {
+    SharedPreferences.getInstance().then((prefs) {
+      const key = "memo-list";
+      if (prefs.containsKey(key)) {
+        _memoList = prefs.getStringList(key)!;
+      }
+      setState(() {
+        _loading = false;
+      });
+    });
+  }
+
+  void _addMemo() {
+    setState(() {
+      _memoList.add("");
+      _currentIndex = _memoList.length - 1;
+      storeMemoList();
+      Navigator.of(context).push(MaterialPageRoute<void>(
+        builder: (BuildContext context) {
+          return new Edit(_memoList[_currentIndex], _onChanged);
+        },
+      ));
+    });
+  }
+
+  void _onChanged(String text) {
+    setState(() {
+      _memoList[_currentIndex] = text;
+      storeMemoList();
+    });
+  }
+
+  void storeMemoList() async {
+    final prefs = await SharedPreferences.getInstance();
+    const key = "memo-list";
+    final success = await prefs.setStringList(key, _memoList);
+    if (!success) {
+      debugPrint("Failed to store value");
+    }
+  }
+
+  Widget _buildList() {
+    final itemCount = _memoList.length == 0 ? 0 : _memoList.length * 2 - 1;
+    return ListView.builder(
+        padding: const EdgeInsets.all(16.0),
+        itemCount: itemCount,
+        itemBuilder: /*1*/ (context, i) {
+          if (i.isOdd) return Divider(height: 2);
+          final index = (i / 2).floor();
+          final memo = _memoList[index];
+          return _buildWrappedRow(memo, index);
+        });
+  }
+
+  Widget _buildWrappedRow(String content, int index) {
+    return Dismissible(
+      background: Container(color: Colors.red),
+      key: Key(content),
+      direction: DismissDirection.endToStart,
+      onDismissed: (direction) {
+        setState(() {
+          _memoList.removeAt(index);
+          storeMemoList();
+        });
+      },
+      child: _buildRow(content, index),
+    );
+  }
+
+  Widget _buildRow(String content, int index) {
+    return ListTile(
+      title: Text(
+        content,
+        style: _biggerFont,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      onTap: () {
+        _currentIndex = index;
+        Navigator.of(context)
+            .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+          return new Edit(_memoList[_currentIndex], _onChanged);
+        }));
+      },
+    );
+  }
+}
+
+class MemoList extends StatefulWidget {
+  @override
+  MemoListState createState() => MemoListState();
 }
