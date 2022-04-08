@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: '焙煎タイマー',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -29,7 +29,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // カウンター
-  int _counter = 0;
+  int _timer = 0;
+
 
   @override
   void initState() {
@@ -40,22 +41,54 @@ class _MyHomePageState extends State<MyHomePage> {
       // 第一引数：繰り返す間隔の時間を設定
       const Duration(seconds: 1),
       // 第二引数：その間隔ごとに動作させたい処理を書く
-      (Timer timer) {
-        _counter++;
+          (Timer timer) {
+        _timer++;
         setState(() {});
       },
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('タイマー'),
+        title: const Text('焙煎タイマー'),
       ),
       body: Center(
-        child: Text(_counter.toString()),
+        child: ElevatedButton(
+          onPressed: () {
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return SecondPage(_timer.toString());
+              }),
+            );
+          },
+          child: Text(_timer.toString()),
+        ),
       ),
     );
   }
 }
+
+class SecondPage extends StatelessWidget {
+  SecondPage(this.name);
+  final String name;
+
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Second Page")),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(name),
+        ),
+      ),
+    );
+  }
+}
+
