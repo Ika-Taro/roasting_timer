@@ -79,7 +79,7 @@ class _StopwatchPageState extends State<StopwatchPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return const MemoList();
+                    return MemoList();
                   }),
                 );
               },
@@ -91,24 +91,6 @@ class _StopwatchPageState extends State<StopwatchPage> {
     );
   }
 }
-
-// class SecondPage extends StatelessWidget {
-//   SecondPage(this.name);
-//   final String name;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         appBar: AppBar(title: const Text("Second Page")),
-//         body: Center()
-//           child: Card(
-//             child: Column(
-//               title: Text(name),
-//             ),
-//           ),
-//         );
-//   }
-// }
 
 class MemoListState extends State<MemoList> {
   var _memoList = <String>[];
@@ -154,7 +136,7 @@ class MemoListState extends State<MemoList> {
       storeMemoList();
       Navigator.of(context).push(MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          return Edit(_memoList[_currentIndex], _onChanged);
+          return Edit(_memoList[_currentIndex], _onChanged,);
         },
       ));
     });
@@ -216,15 +198,16 @@ class MemoListState extends State<MemoList> {
         _currentIndex = index;
         Navigator.of(context)
             .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-          return Edit(_memoList[_currentIndex], _onChanged);
+          return Edit(_memoList[_currentIndex], _onChanged,);
         }));
       },
     );
   }
 }
 
+// ignore: prefer_final_fields
 class MemoList extends StatefulWidget {
-  const MemoList({Key? key}) : super(key: key);
+  // const MemoList({Key? key}) : super(key: key);
   @override
   MemoListState createState() => MemoListState();
 }
