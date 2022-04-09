@@ -12,16 +12,14 @@ class Edit extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Edit'),
         actions: <Widget>[
-          FlatButton(
+          ElevatedButton(
             onPressed: () => FocusScope.of(context).requestFocus(FocusNode()),
             child: const Icon(Icons.check),
-            shape: const CircleBorder(side: BorderSide(color: Colors.transparent)),
           ),
         ],
-        leading: FlatButton(
+        leading: ElevatedButton(
           onPressed: () => Navigator.of(context).pop(),
           child: const Icon(Icons.arrow_back_ios),
-          shape: const CircleBorder(side: BorderSide(color: Colors.transparent)),
         ),
       ),
       body: Container(
@@ -38,4 +36,3 @@ class Edit extends StatelessWidget {
     );
   }
 }
-

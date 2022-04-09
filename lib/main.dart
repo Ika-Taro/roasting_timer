@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:roasting_timer/edit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 void main() {
   runApp(const MyApp());
 }
+
 String formatTime(int milliseconds) {
   var secs = milliseconds ~/ 1000;
   var hours = (secs ~/ 3600).toString().padLeft(2, '0');
@@ -15,6 +14,7 @@ String formatTime(int milliseconds) {
   var seconds = (secs % 60).toString().padLeft(2, '0');
   return "$hours:$minutes:$seconds";
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -23,12 +23,14 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(title: 'Stopwatch Example', home: StopwatchPage());
   }
 }
+
 class StopwatchPage extends StatefulWidget {
   const StopwatchPage({Key? key}) : super(key: key);
 
   @override
   _StopwatchPageState createState() => _StopwatchPageState();
 }
+
 class _StopwatchPageState extends State<StopwatchPage> {
   late Stopwatch _stopwatch;
   late Timer _timer;
@@ -42,6 +44,7 @@ class _StopwatchPageState extends State<StopwatchPage> {
       setState(() {});
     });
   }
+
   @override
   void dispose() {
     _timer.cancel();
@@ -54,8 +57,9 @@ class _StopwatchPageState extends State<StopwatchPage> {
     } else {
       _stopwatch.start();
     }
-    setState(() {});    // re-render the page
+    setState(() {}); // re-render the page
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,19 +68,23 @@ class _StopwatchPageState extends State<StopwatchPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(formatTime(_stopwatch.elapsedMilliseconds), style: const TextStyle(fontSize: 48.0)),
-            ElevatedButton(onPressed: handleStartStop, child: Text(_stopwatch.isRunning ? 'Stop' : 'Start')),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) {
-            //         return SecondPage(_stopwatch.elapsed.toString());
-            //       }),
-            //     );
-            //   },
-            //   child: const Text('保存'),
-            // ),
+            Text(formatTime(_stopwatch.elapsedMilliseconds),
+                style: const TextStyle(fontSize: 48.0)),
+            ElevatedButton(
+                onPressed: handleStartStop,
+                child: Text(_stopwatch.isRunning ? 'Stop' : 'Start')),
+
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return const MemoList();
+                  }),
+                );
+              },
+              child: const Text('保存'),
+            ),
           ],
         ),
       ),
@@ -86,7 +94,6 @@ class _StopwatchPageState extends State<StopwatchPage> {
 
 // class SecondPage extends StatelessWidget {
 //   SecondPage(this.name);
-//
 //   final String name;
 //
 //   @override
@@ -106,34 +113,26 @@ class _StopwatchPageState extends State<StopwatchPage> {
 class MemoListState extends State<MemoList> {
   var _memoList = <String>[];
   var _currentIndex = -1;
-  bool _loading = true;
   final _biggerFont = const TextStyle(fontSize: 18.0);
 
   @override
   void initState() {
     super.initState();
-    this.loadMemoList();
+    loadMemoList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final title = "Home";
-    if (_loading) {
-      return Scaffold(
-          appBar: AppBar(
-            title: Text(title),
-          ),
-          body: CircularProgressIndicator());
-    }
+    const title = "Home";
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: const Text(title),
       ),
       body: _buildList(),
       floatingActionButton: FloatingActionButton(
         onPressed: _addMemo,
         tooltip: 'New Memo',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -144,9 +143,7 @@ class MemoListState extends State<MemoList> {
       if (prefs.containsKey(key)) {
         _memoList = prefs.getStringList(key)!;
       }
-      setState(() {
-        _loading = false;
-      });
+      setState(() {});
     });
   }
 
@@ -157,7 +154,7 @@ class MemoListState extends State<MemoList> {
       storeMemoList();
       Navigator.of(context).push(MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          return new Edit(_memoList[_currentIndex], _onChanged);
+          return Edit(_memoList[_currentIndex], _onChanged);
         },
       ));
     });
@@ -180,12 +177,12 @@ class MemoListState extends State<MemoList> {
   }
 
   Widget _buildList() {
-    final itemCount = _memoList.length == 0 ? 0 : _memoList.length * 2 - 1;
+    final itemCount = _memoList.isEmpty ? 0 : _memoList.length * 2 - 1;
     return ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: itemCount,
         itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return Divider(height: 2);
+          if (i.isOdd) return const Divider(height: 2);
           final index = (i / 2).floor();
           final memo = _memoList[index];
           return _buildWrappedRow(memo, index);
@@ -219,7 +216,7 @@ class MemoListState extends State<MemoList> {
         _currentIndex = index;
         Navigator.of(context)
             .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-          return new Edit(_memoList[_currentIndex], _onChanged);
+          return Edit(_memoList[_currentIndex], _onChanged);
         }));
       },
     );
@@ -227,6 +224,7 @@ class MemoListState extends State<MemoList> {
 }
 
 class MemoList extends StatefulWidget {
+  const MemoList({Key? key}) : super(key: key);
   @override
   MemoListState createState() => MemoListState();
 }
