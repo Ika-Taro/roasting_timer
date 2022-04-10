@@ -1,55 +1,39 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-// import 'package:shared_preferences/shared_preferences.dart';
 
-// import 'package:roasting_timer/main.dart';
+String formatTime(int milliseconds) {
+  var secs = milliseconds ~/ 1000;
+  var hours = (secs ~/ 3600).toString().padLeft(2, '0');
+  var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
+  var seconds = (secs % 60).toString().padLeft(2, '0');
+  return "$hours:$minutes:$seconds";
+}
 
 class Edit extends StatefulWidget {
 
-  final String _current;
-  final Function _onChanged;
+  String _current;
+  Function _onChanged;
 
-  Edit(this._current, this._onChanged, {Key? key}) : super(key: key);
+  Edit(this._current, this._onChanged,);
 
   @override
   State<Edit> createState() => _EditState();
 }
 
 class _EditState extends State<Edit> {
-  String formatTime(int milliseconds) {
-    var secs = milliseconds ~/ 1000;
-    var hours = (secs ~/ 3600).toString().padLeft(2, '0');
-    var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
-    var seconds = (secs % 60).toString().padLeft(2, '0');
-    return "$hours:$minutes:$seconds";
-  }
-
   late Stopwatch _stopwatch;
-  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     _stopwatch = Stopwatch();
-    // re-render every 30ms
-    _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
-      setState(() {});
-    });
   }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
   void handleStartStop() {
     if (_stopwatch.isRunning) {
       _stopwatch.stop();
     } else {
       _stopwatch.start();
     }
-    setState(() {}); // re-render the page
+    setState(() {});    // re-render the page
   }
 
   @override
@@ -79,12 +63,12 @@ class _EditState extends State<Edit> {
                 child: Text(_stopwatch.isRunning ? 'Stop' : 'Start')),
 
             TextField(
-              controller: TextEditingController(text: _current),
+              controller: TextEditingController(text: widget._current),
               maxLines: 99,
-              style: TextStyle(color: Colors.black),
+              style: const TextStyle(color: Colors.black),
               onChanged: (text) {
-                _current = text;
-                _onChanged(_current);
+                widget._current = text;
+                widget._onChanged(widget._current);
               },
             ),
 

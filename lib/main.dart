@@ -3,91 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:roasting_timer/edit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-String formatTime(int milliseconds) {
-  var secs = milliseconds ~/ 1000;
-  var hours = (secs ~/ 3600).toString().padLeft(2, '0');
-  var minutes = ((secs % 3600) ~/ 60).toString().padLeft(2, '0');
-  var seconds = (secs % 60).toString().padLeft(2, '0');
-  return "$hours:$minutes:$seconds";
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: '焙煎タイマー', home: StopwatchPage());
-  }
-}
-
-class StopwatchPage extends StatefulWidget {
-  const StopwatchPage({Key? key}) : super(key: key);
-
-  @override
-  _StopwatchPageState createState() => _StopwatchPageState();
-}
-
-class _StopwatchPageState extends State<StopwatchPage> {
-  late Stopwatch _stopwatch;
-  late Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _stopwatch = Stopwatch();
-    // re-render every 30ms
-    _timer = Timer.periodic(const Duration(milliseconds: 30), (timer) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  void handleStartStop() {
-    if (_stopwatch.isRunning) {
-      _stopwatch.stop();
-    } else {
-      _stopwatch.start();
-    }
-    setState(() {}); // re-render the page
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Stopwatch Example')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(formatTime(_stopwatch.elapsedMilliseconds),
-                style: const TextStyle(fontSize: 48.0)),
-            ElevatedButton(
-                onPressed: handleStartStop,
-                child: Text(_stopwatch.isRunning ? 'Stop' : 'Start')),
-
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return MemoList();
-                  }),
-                );
-              },
-              child: const Text('保存'),
-            ),
-          ],
-        ),
+    return MaterialApp(
+      title: 'Memo App',
+      theme: ThemeData(
+        primaryColor: Colors.white,
       ),
+      home: MemoList(),
     );
   }
 }
@@ -95,6 +21,7 @@ class _StopwatchPageState extends State<StopwatchPage> {
 class MemoListState extends State<MemoList> {
   var _memoList = <String>[];
   var _currentIndex = -1;
+  bool _loading = true;
   final _biggerFont = const TextStyle(fontSize: 18.0);
 
   @override
@@ -106,6 +33,13 @@ class MemoListState extends State<MemoList> {
   @override
   Widget build(BuildContext context) {
     const title = "Home";
+    if (_loading) {
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text(title),
+          ),
+          body: const CircularProgressIndicator());
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text(title),
@@ -125,7 +59,9 @@ class MemoListState extends State<MemoList> {
       if (prefs.containsKey(key)) {
         _memoList = prefs.getStringList(key)!;
       }
-      setState(() {});
+      setState(() {
+        _loading = false;
+      });
     });
   }
 
@@ -136,7 +72,7 @@ class MemoListState extends State<MemoList> {
       storeMemoList();
       Navigator.of(context).push(MaterialPageRoute<void>(
         builder: (BuildContext context) {
-          return Edit(_memoList[_currentIndex], _onChanged,);
+          return Edit(_memoList[_currentIndex], _onChanged);
         },
       ));
     });
@@ -198,16 +134,14 @@ class MemoListState extends State<MemoList> {
         _currentIndex = index;
         Navigator.of(context)
             .push(MaterialPageRoute<void>(builder: (BuildContext context) {
-          return Edit(_memoList[_currentIndex], _onChanged,);
+          return Edit(_memoList[_currentIndex], _onChanged);
         }));
       },
     );
   }
 }
 
-// ignore: prefer_final_fields
 class MemoList extends StatefulWidget {
-  // const MemoList({Key? key}) : super(key: key);
   @override
   MemoListState createState() => MemoListState();
 }
