@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(title: 'Stopwatch Example', home: StopwatchPage());
+    return const MaterialApp(title: '焙煎タイマー', home: StopwatchPage());
   }
 }
 
