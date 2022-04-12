@@ -52,39 +52,41 @@ class _EditState extends State<Edit> {
           child: const Icon(Icons.arrow_back_ios),
         ),
       ),
-      body: Container(
+      body: ListView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            Text(formatTime(_stopwatch.elapsedMilliseconds),
-                style: const TextStyle(fontSize: 48.0)),
-            ElevatedButton(
-                onPressed: handleStartStop,
-                child: Text(_stopwatch.isRunning ? 'Stop' : 'Start')),
+        children: [
+          Column(
+            children: <Widget>[
+              Text(formatTime(_stopwatch.elapsedMilliseconds),
+                  style: const TextStyle(fontSize: 48.0)),
+              ElevatedButton(
+                  onPressed: handleStartStop,
+                  child: Text(_stopwatch.isRunning ? 'Stop' : 'Start')),
 
-            TextField(
-              controller: TextEditingController(text: widget._current),
-              maxLines: 99,
-              style: const TextStyle(color: Colors.black),
-              onChanged: (text) {
-                widget._current = text;
-                widget._onChanged(widget._current);
-              },
-            ),
+              TextField(
+                controller: TextEditingController(text: widget._current),
+                maxLines: 99,
+                style: const TextStyle(color: Colors.black),
+                onChanged: (text) {
+                  widget._current = text;
+                  widget._onChanged(widget._current);
+                },
+              ),
 
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) {
-            //         return Edit(_stopwatch.elapsed.toString());
-            //       }),
-            //     );
-            //   },
-            //   child: const Text('保存'),
-            // ),
-          ],
-        ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(builder: (context) {
+              //         return Edit(_stopwatch.elapsed.toString());
+              //       }),
+              //     );
+              //   },
+              //   child: const Text('保存'),
+              // ),
+            ],
+          ),
+        ],
       ),
     );
   }
